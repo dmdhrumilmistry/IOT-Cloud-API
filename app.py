@@ -4,11 +4,10 @@ from database import DB
 import config
 import datetime
 import os
-import pprint
 
 
 app = Flask(__name__)
-# app.config['ENV'] = 'development'
+app.config['ENV'] = 'development'
 db_path = os.path.join(os.getcwd(), 'pushed_data')
 db = DB(db_path)
 
@@ -28,16 +27,16 @@ def __save_pushed_data(data:dict) -> bool:
         if sensor not in dbdata[config.AUTH_KEY][node].keys():
             dbdata[config.AUTH_KEY][node][sensor] = list()
     
-    #  Format : 
-    # { 
-    #   KEY : 
-    #       { 
-    #           NODE : 
-    #                   { 
-    #                       SENSOR : [(data, time, date)]
-    #                   }
-    #       }
-    # }
+        #  Format : 
+        # { 
+        #   KEY : 
+        #       { 
+        #           NODE : 
+        #                   { 
+        #                       SENSOR : [(data, time, date)]
+        #                   }
+        #       }
+        # }
         time = datetime.datetime.now()
         data_tuple = (str(time.strftime("%m %d %Y")), str(time.strftime("%H:%M:%S")), sensor_data)
         dbdata[config.AUTH_KEY][node][sensor].append(data_tuple)
@@ -46,7 +45,6 @@ def __save_pushed_data(data:dict) -> bool:
         db.write_data()
 
     except Exception as e:
-        print('[!] Exception :', e)
         status = False
     return status
 
@@ -60,16 +58,12 @@ def home():
 @app.route(f'/{config.AUTH_KEY}/push_data', methods=['POST'])
 def push_data():
     if request.method == "POST":
-        # try:
-        data = request.json
-        print("POSTED data :",data)
-        status = False
-        if __save_pushed_data(data):
-            status = True
-        return jsonify({"push_status":status}), 200
+        try:
+            data = request.json
+            return jsonify({"push_status":__save_pushed_data(data)}), 200
 
-        # except Exception as e:
-            # print(e)
-            # return jsonify({'Error':'Invalid Data'}), 400
+        except Exception as e:
+            print(e)
+            return jsonify({'Error':'Invalid Data'}), 400
 
     return jsonify({'Error':'Invalid Request'}), 400
