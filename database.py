@@ -12,7 +12,8 @@ class DB:
         if not os.path.exists(self.path):
             self.data = dict()
             self.write_data()
-        
+        else:
+            self.data = self.read_data()
 
     def write_data(self):
         with open(self.path, 'w') as f:

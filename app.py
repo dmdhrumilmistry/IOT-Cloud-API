@@ -13,6 +13,16 @@ db = DB(db_path)
 
 
 def __save_pushed_data(data:dict) -> bool:
+    '''
+    description:
+        Saves pushed data from client to database
+
+    params:
+        data (dict) : data in form of dictionary
+
+    returns:
+        bool
+    '''
     status = True
     try:
         dbdata = db.read_data()
@@ -67,3 +77,8 @@ def push_data():
             return jsonify({'Error':'Invalid Data'}), 400
 
     return jsonify({'Error':'Invalid Request'}), 400
+
+
+@app.route(f'/{config.AUTH_KEY}/get_data/', methods=['POST', 'GET'])
+def get_data():
+    return jsonify(db.data)
