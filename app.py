@@ -1,3 +1,23 @@
+'''
+module: app
+description:
+-------------------------
+ API for IOT cloud
+-------------------------
+Accepts data from the node in form of json data and stores it in local icdb file
+
+Stored Data Format in icdb file:
+{ 
+  KEY : 
+      { 
+          NODE : 
+                  { 
+                      SENSOR : [(data, time, date)]
+                  }
+      }
+}
+'''
+
 from flask import Flask, jsonify, make_response, request
 from database import DB
 
@@ -37,16 +57,7 @@ def __save_pushed_data(data:dict) -> bool:
         if sensor not in dbdata[config.AUTH_KEY][node].keys():
             dbdata[config.AUTH_KEY][node][sensor] = list()
     
-        #  Format : 
-        # { 
-        #   KEY : 
-        #       { 
-        #           NODE : 
-        #                   { 
-        #                       SENSOR : [(data, time, date)]
-        #                   }
-        #       }
-        # }
+      
         time = datetime.datetime.now()
         data_tuple = (str(time.strftime("%m %d %Y")), str(time.strftime("%H:%M:%S")), sensor_data)
         dbdata[config.AUTH_KEY][node][sensor].append(data_tuple)
@@ -61,12 +72,34 @@ def __save_pushed_data(data:dict) -> bool:
 
 @app.route('/', methods=['POST', 'GET'])
 def home():
+    '''
+    description:
+        return Home page html code and status code
+
+    params: 
+        None
+    
+    returns:
+        Response, int
+    '''
     response = make_response("<h1>IOT Cloud API</h1>")
     return response, 200
 
 
 @app.route(f'/{config.AUTH_KEY}/push_data', methods=['POST'])
 def push_data():
+    '''
+    description:
+        handles client pushed json data from the node, 
+        saves in the database, and returns status back
+        to the user in json format along with status code.
+
+    params:
+        None
+    
+    returns:
+        Response, int
+    '''
     if request.method == "POST":
         try:
             data = request.json
@@ -81,4 +114,16 @@ def push_data():
 
 @app.route(f'/{config.AUTH_KEY}/get_data/', methods=['POST', 'GET'])
 def get_data():
+    '''
+    description:
+        handles client request to retrieve data from 
+        the database, returns data in json format along
+        with status code.
+
+    params:
+        None
+
+    returns:
+
+    '''
     return jsonify(db.data)

@@ -26,3 +26,38 @@ Custom Cloud RESTful API written in Python using Flask Framework to save data fr
   flask run
   ```
  
+## Endpoints
+|endpoint|description|
+|:------:|:----------|
+|/|returns Home Page html code|
+|/AUTH_KEY/push_data|authenticates user, saves pushed data on the server and returns the status in json format|
+|/AUTH_KEY/get_data|authenticates user and returns the data on the server in json format|
+
+## Example Test Programs
+- Requirements:
+  - requests
+
+- Push Data to server using python for testing
+  ```python
+  import requests
+  key = "Test_Key"
+
+  url = f"http://127.0.0.1:5000/{key}/push_data"
+  command = "push_data"
+  data = {
+      'node' : "1",
+      'sensor' : "mq135",
+      'sen_data' : '120',
+  }
+  response = requests.post(url=url, json=data)
+  print(response.content.decode('utf-8'))
+  ```
+- Get data from the server using python for testing
+  ```python
+  import requests
+  key = "Test_Key"
+  
+  url = f"http://127.0.0.1:5000/{key}/get_data"
+  response = requests.post(url={url}, json=data)
+  print(response.content.decode('utf-8'))
+  ```
