@@ -1,3 +1,8 @@
+'''
+module: wsgi
+description: wsgi configuration module for deployment
+'''
+
 import config
 from app import app
 
