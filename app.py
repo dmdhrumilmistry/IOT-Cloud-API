@@ -103,6 +103,7 @@ def push_data():
     if request.method == "POST":
         try:
             data = request.json
+            print(data)
             return jsonify({"push_status":__save_pushed_data(data)}), 200
 
         except Exception as e:
