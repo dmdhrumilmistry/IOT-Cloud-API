@@ -8,7 +8,8 @@ Accepts data from the node in form of json data and stores it in local icdb file
 
 Stored Data Format in icdb file:
 { 
-  KEY : 
+  KEY : pus
+  t
       { 
           NODE : 
                   { 
@@ -18,13 +19,15 @@ Stored Data Format in icdb file:
 }
 '''
 
-from flask import Flask, jsonify, make_response, request
+from flask import Flask, jsonify, make_response, request, render_template
 from database import DB
 
 import config
 import datetime
 import os
-
+from random import random
+from time import time
+import json
 
 app = Flask(__name__)
 app.config['ENV'] = 'development'
@@ -82,7 +85,8 @@ def home():
     returns:
         Response, int
     '''
-    response = make_response("<h1>IOT Cloud API</h1>")
+    # response = make_response("<h1>IOT Cloud API</h1>")
+    response = render_template("index.html")
     return response, 200
 
 
@@ -112,9 +116,17 @@ def push_data():
 
     return jsonify({'Error':'Invalid Request'}), 400
 
-
-@app.route(f'/{config.AUTH_KEY}/get_data/', methods=['POST', 'GET'])
+@app.route('/data', methods=["GET",  "POST"])
 def get_data():
+    #temp = random() * 100
+    #humid = random() * 55
+    #data = [time() * 1000, temp, humid]
+    response = make_response(json.dumps(data))
+    response.content_type = 'application/json'
+    return response
+    
+#@app.route(f'/{config.AUTH_KEY}/get_data/', methods=['POST', 'GET'])
+#def get_data():
     '''
     description:
         handles client request to retrieve data from 
