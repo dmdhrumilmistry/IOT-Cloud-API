@@ -32,7 +32,8 @@ class DB:
             self.data = dict()
             self.write_data()
         else:
-            self.data = self.read_data()
+            self.data:dict = self.read_data()
+
 
     def write_data(self):
         '''

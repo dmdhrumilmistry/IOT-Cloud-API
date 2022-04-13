@@ -8,8 +8,7 @@ Accepts data from the node in form of json data and stores it in local icdb file
 
 Stored Data Format in icdb file:
 { 
-  KEY : pus
-  t
+  KEY :
       { 
           NODE : 
                   { 
@@ -18,16 +17,13 @@ Stored Data Format in icdb file:
       }
 }
 '''
-
 from flask import Flask, jsonify, make_response, request, render_template
 from database import DB
 
 import config
 import datetime
 import os
-from random import random
 from time import time
-import json
 
 app = Flask(__name__)
 app.config['ENV'] = 'development'
@@ -35,7 +31,8 @@ db_path = os.path.join(os.getcwd(), 'pushed_data')
 db = DB(db_path)
 key = "Test_Key"
 
-def __save_pushed_data(data:dict) -> bool:
+
+def __save_pushed_data(data: dict) -> bool:
     '''
     description:
         Saves pushed data from client to database
@@ -59,10 +56,10 @@ def __save_pushed_data(data:dict) -> bool:
             dbdata[config.AUTH_KEY][node] = dict()
         if sensor not in dbdata[config.AUTH_KEY][node].keys():
             dbdata[config.AUTH_KEY][node][sensor] = list()
-    
-      
+
         time = datetime.datetime.now()
-        data_tuple = (str(time.strftime("%m %d %Y")), str(time.strftime("%H:%M:%S")), sensor_data)
+        data_tuple = (str(time.strftime("%m %d %Y")), str(
+            time.strftime("%H:%M:%S")), sensor_data)
         dbdata[config.AUTH_KEY][node][sensor].append(data_tuple)
 
         db.data = dbdata
@@ -81,11 +78,10 @@ def home():
 
     params: 
         None
-    
+
     returns:
         Response, int
     '''
-    # response = make_response("<h1>IOT Cloud API</h1>")
     response = render_template("index.html")
     return response, 200
 
@@ -100,7 +96,7 @@ def push_data():
 
     params:
         None
-    
+
     returns:
         Response, int
     '''
@@ -108,24 +104,28 @@ def push_data():
         try:
             data = request.json
             print(data)
-            return jsonify({"push_status":__save_pushed_data(data)}), 200
+            return jsonify({"push_status": __save_pushed_data(data)}), 200
 
         except Exception as e:
             print(e)
-            return jsonify({'Error':'Invalid Data'}), 400
+            return jsonify({'Error': 'Invalid Data'}), 400
 
-    return jsonify({'Error':'Invalid Request'}), 400
+    return jsonify({'Error': 'Invalid Request'}), 400
+
 
 @app.route('/data', methods=["GET",  "POST"])
 def get_data():
-    # data = {
-    #     "temp": db.data["0"]["temp"][-1],
-    #     "humidi"
-    # }
-    # db.data["0"]["temp"]
-    temp = db.data[key]["0"]["temp"][-1][-1]
-    humid = db.data[key]["0"]["humidity"][-1][-1]
-    data = [time() * 1000, temp, humid]
-    response = make_response(json.dumps(data))
-    response.content_type = 'application/json'
-    return response
+    node_name = "0"
+    
+    # if data exists then return data else return error
+    if key in db.data.keys() and node_name in db.data[key].keys():
+        temp = db.data[key]["0"]["temp"][-1][-1]
+        humid = db.data[key]["0"]["humidity"][-1][-1]
+        data = [time() * 1000, temp, humid]
+        response = jsonify(data)
+        status_code = 200
+        response.content_type = 'application/json'
+    else:
+        response = make_response("<h2>data doesn't exists</h2>")
+        status_code = 500
+    return response, status_code
