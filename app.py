@@ -33,7 +33,7 @@ app = Flask(__name__)
 app.config['ENV'] = 'development'
 db_path = os.path.join(os.getcwd(), 'pushed_data')
 db = DB(db_path)
-
+key = "Test_Key"
 
 def __save_pushed_data(data:dict) -> bool:
     '''
@@ -118,25 +118,14 @@ def push_data():
 
 @app.route('/data', methods=["GET",  "POST"])
 def get_data():
-    #temp = random() * 100
-    #humid = random() * 55
-    #data = [time() * 1000, temp, humid]
+    # data = {
+    #     "temp": db.data["0"]["temp"][-1],
+    #     "humidi"
+    # }
+    # db.data["0"]["temp"]
+    temp = db.data[key]["0"]["temp"][-1][-1]
+    humid = db.data[key]["0"]["humidity"][-1][-1]
+    data = [time() * 1000, temp, humid]
     response = make_response(json.dumps(data))
     response.content_type = 'application/json'
     return response
-    
-#@app.route(f'/{config.AUTH_KEY}/get_data/', methods=['POST', 'GET'])
-#def get_data():
-    '''
-    description:
-        handles client request to retrieve data from 
-        the database, returns data in json format along
-        with status code.
-
-    params:
-        None
-
-    returns:
-
-    '''
-    return jsonify(db.data)
