@@ -115,7 +115,6 @@
                 var data1 = [];
                 data1.push(result[0]);
                 data1.push(result[1]);
-                console.log(data1)
 
                 // Add the Point
                 // Time Humidity
@@ -139,7 +138,7 @@
         }
 
         $(document).ready(function () {
-            // --------------Chart 1 ----------------------------
+            // -------------- Temp Chart ----------------------------
             chartTemperatue = new Highcharts.Chart({
                 chart:
                 {
@@ -155,6 +154,9 @@
                 },
                 xAxis: {
                     type: 'datetime',
+                    labels: {
+                        format: '{value:%Y-%b-%e %l:%M %p}'
+                    },
                     tickPixelInterval: 150,
                     maxZoom: 20 * 1000
                 },
@@ -173,8 +175,9 @@
                     data: []
                 }]
             });
-            // --------------Chart 1 Ends - -----------------
+            // -------------- Temp Chart Ends ------------------
 
+            // -------------- Humidity Chart ------------------
             chartHumidity = new Highcharts.Chart({
                 chart:
                 {
@@ -190,6 +193,9 @@
                 },
                 xAxis: {
                     type: 'datetime',
+                    labels: {
+                        format: '{value:%Y-%b-%e %l:%M %p}'
+                    },
                     tickPixelInterval: 150,
                     maxZoom: 20 * 1000
                 },
@@ -207,9 +213,9 @@
                     data: []
                 }]
             });
-
-
         });
+        // -------------- Humidity Chart Ends ------------------
+
     </script>
 </body>
 

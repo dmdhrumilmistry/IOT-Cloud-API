@@ -21,7 +21,7 @@ from flask import Flask, jsonify, make_response, request, render_template
 from database import DB
 
 import config
-import datetime
+# import datetime
 import os
 from time import time
 
@@ -57,9 +57,9 @@ def __save_pushed_data(data: dict) -> bool:
         if sensor not in dbdata[config.AUTH_KEY][node].keys():
             dbdata[config.AUTH_KEY][node][sensor] = list()
 
-        time = datetime.datetime.now()
-        data_tuple = (str(time.strftime("%m %d %Y")), str(
-            time.strftime("%H:%M:%S")), sensor_data)
+        # time = datetime.datetime.now()
+        # data_tuple = (str(time.strftime("%m %d %Y")), str(time.strftime("%H:%M:%S")), sensor_data)
+        data_tuple = (time()*1000, sensor_data)
         dbdata[config.AUTH_KEY][node][sensor].append(data_tuple)
 
         db.data = dbdata
@@ -121,7 +121,8 @@ def get_data():
     if key in db.data.keys() and node_name in db.data[key].keys():
         temp = db.data[key]["0"]["temp"][-1][-1]
         humid = db.data[key]["0"]["humidity"][-1][-1]
-        data = [time() * 1000, temp, humid]
+        time = db.data[key]["0"]["humidity"][-1][0]
+        data = [time, temp, humid]
         response = jsonify(data)
         status_code = 200
         response.content_type = 'application/json'
