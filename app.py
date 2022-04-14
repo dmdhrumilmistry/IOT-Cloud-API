@@ -21,7 +21,6 @@ from flask import Flask, jsonify, make_response, request, render_template
 from database import DB
 
 import config
-# import datetime
 import os
 from time import time
 
@@ -103,7 +102,6 @@ def push_data():
     if request.method == "POST":
         try:
             data = request.json
-            print(data)
             return jsonify({"push_status": __save_pushed_data(data)}), 200
 
         except Exception as e:
@@ -119,14 +117,15 @@ def get_data():
     
     # if data exists then return data else return error
     if key in db.data.keys() and node_name in db.data[key].keys():
-        temp = db.data[key]["0"]["temp"][-1][-1]
-        humid = db.data[key]["0"]["humidity"][-1][-1]
-        time = db.data[key]["0"]["humidity"][-1][0]
-        data = [time, temp, humid]
+        temp = db.data[key][node_name]["temp"][-1][-1]
+        humid = db.data[key][node_name]["humidity"][-1][-1]
+        co2 = db.data[key][node_name]["CO2"][-1][-1]
+        time = db.data[key][node_name]["humidity"][-1][0]
+        data = [time, temp, humid, co2]
         response = jsonify(data)
         status_code = 200
         response.content_type = 'application/json'
     else:
         response = make_response("<h2>data doesn't exists</h2>")
-        status_code = 500
+        status_code = 404
     return response, status_code

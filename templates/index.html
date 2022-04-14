@@ -20,7 +20,6 @@
         crossorigin="anonymous"></script>
 
 
-
     <!-- JQuery links  -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
@@ -55,6 +54,11 @@
             </div>
             <br>
 
+            <div class="col-5 jumbotron p-2 mx-1">
+                <h1 class="sensor3"> Sensor : </h1>
+            </div>
+            <br>
+
         </div>
     </div>
 
@@ -71,7 +75,6 @@
     </style>
 
     <div class="container-fluid">
-        <!-- Example row of columns -->
         <div class="row">
             <div class="container-fluid" id="data-temperature">
 
@@ -83,9 +86,19 @@
     <br>
 
     <div class="container-fluid">
-        <!-- Example row of columns -->
         <div class="row">
             <div class="container-fluid" id="data-humidity">
+
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+    <br>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="container-fluid" id="data-co2">
 
             </div>
         </div>
@@ -95,20 +108,26 @@
     <script>
         var chartTemperatue;
         var chartHumidity;
+        var chartCO2;
+
         const timing = 4000;
         function requestData() {
             // Ajax call to get the Data from Flask
             var requests = $.get('/data');
 
             var tm = requests.done(function (result) {
-                console.log(result);
+                console.log(requests)
                 // Temperature
                 var seriesTemperature = chartTemperatue.series[0],
                     shiftTemperature = seriesTemperature.data.length > 20;
 
                 // Humidity
                 var seriesHumidity = chartHumidity.series[0],
-                    shiftHumidity = seriesTemperature.data.length > 20;
+                    shiftHumidity = seriesHumidity.data.length > 20;
+
+                // Co2
+                var seriesCo2 = chartCO2.series[0],
+                    shiftCo2 = seriesCo2.data.length > 20;
 
                 // Add the Point
                 // Time Temperature\
@@ -122,18 +141,28 @@
                 data2.push(result[0]);
                 data2.push(result[2]);
 
+                // Add the Point
+                // Time Co2
+                var data3 = [];
+                data3.push(result[0]);
+                data3.push(result[3]);
+
 
                 chartTemperatue.series[0].addPoint(data1, true, shiftTemperature);
                 chartHumidity.series[0].addPoint(data2, true, shiftHumidity);
+                chartCO2.series[0].addPoint(data3, true, shiftCo2);
+
                 $(".sensor1").text("");
                 $(".sensor1").text("Temperature : " + Math.round(data1[1]));
 
                 $(".sensor2").text("");
                 $(".sensor2").text("Humidity : " + Math.round(data2[1]));
 
+                $(".sensor3").text("");
+                $(".sensor3").text("CO2 : " + Math.round(data3[1]));
+
                 // call it again after one second
                 setTimeout(requestData, timing);
-
             });
         }
 
@@ -213,8 +242,46 @@
                     data: []
                 }]
             });
+            // -------------- Humidity Chart Ends ------------------
+
+            // -------------- CO2 Chart ------------------
+            chartCO2 = new Highcharts.Chart({
+                chart:
+                {
+                    renderTo: 'data-co2',
+                    defaultSeriesType: 'area',
+                    events: {
+                        load: requestData
+                    }
+                },
+                title:
+                {
+                    text: 'CO2'
+                },
+                xAxis: {
+                    type: 'datetime',
+                    labels: {
+                        format: '{value:%Y-%b-%e %l:%M %p}'
+                    },
+                    tickPixelInterval: 150,
+                    maxZoom: 20 * 1000
+                },
+                yAxis: {
+                    minPadding: 0.2,
+                    maxPadding: 0.2,
+                    title: {
+                        text: 'Value',
+                        margin: 80
+                    }
+                },
+                series: [{
+                    lineColor: '#1d82b8',
+                    name: 'CO2',
+                    data: []
+                }]
+            });
+            // -------------- CO2 Chart Ends ------------------
         });
-        // -------------- Humidity Chart Ends ------------------
 
     </script>
 </body>
